@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config() // .env
 const port = process.env.PORT || 3000;
 
@@ -24,14 +24,42 @@ const run = async () => {
   try {
     await client.connect();
 
-    const carsCollection = client.db('toyazoneDB').collection('regularcar')
+    const regularCollection = client.db('toyazoneDB').collection('regularcar')
+    const sportsCollection = client.db('toyazoneDB').collection('sportscar')
 
-    // get data from mongo to server
+    // regular car: get data from mongo to server
     app.get('/regular', async (req, res) => {
-      const result = await carsCollection.find().toArray();
+      const result = await regularCollection.find().toArray();
       res.send(result);
     })
 
+    // regular car: view Detail
+    app.get('/regular/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const options = {
+        projection: { img: 1, name: 1, price: 1, rating: 1, description: 1 }
+      };
+      const result = await regularCollection.findOne(query, options)
+      res.send(result)
+    })
+
+    // sports car: get data from mongo to server
+    app.get('/sports', async (req, res) => {
+      const result = await sportsCollection.find().toArray();
+      res.send(result);
+    })
+
+    // sports car: view Detail
+    app.get('/sports/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const options = {
+        projection: { img: 1, name: 1, price: 1, rating: 1, description: 1 }
+      };
+      const result = await sportsCollection.findOne(query, options)
+      res.send(result)
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("Toyazone successfully connected to MongoDB!");
