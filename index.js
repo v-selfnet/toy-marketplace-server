@@ -20,9 +20,19 @@ const client = new MongoClient(uri, {
   }
 });
 
-async function run() {
+const run = async () => {
   try {
     await client.connect();
+
+    const carsCollection = client.db('toyazoneDB').collection('regularcar')
+
+    // get data from mongo to server
+    app.get('/regular', async (req, res) => {
+      const result = await carsCollection.find().toArray();
+      res.send(result);
+    })
+
+
     await client.db("admin").command({ ping: 1 });
     console.log("Toyazone successfully connected to MongoDB!");
   } finally {
@@ -33,9 +43,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Toyazone Server is Running...');
-  })
-  
-  app.listen(port, () => {
-    console.log(`Toyazone Server is Running on Port: ${port}`);
-  })
+  res.send('Toyazone Server is Running...');
+})
+
+app.listen(port, () => {
+  console.log(`Toyazone Server is Running on Port: ${port}`);
+})
