@@ -26,6 +26,7 @@ const run = async () => {
 
     const regularCollection = client.db('toyazoneDB').collection('regularcar')
     const sportsCollection = client.db('toyazoneDB').collection('sportscar')
+    const policeCollection = client.db('toyazoneDB').collection('policecar')
 
     // regular car: get data from mongo to server
     app.get('/regular', async (req, res) => {
@@ -58,6 +59,23 @@ const run = async () => {
         projection: { img: 1, name: 1, price: 1, rating: 1, description: 1 }
       };
       const result = await sportsCollection.findOne(query, options)
+      res.send(result)
+    })
+
+    // police car: get data from mongo to server
+    app.get('/police', async (req, res) => {
+      const result = await policeCollection.find().toArray();
+      res.send(result);
+    })
+
+    // police car: view Detail
+    app.get('/police/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const options = {
+        projection: { img: 1, name: 1, price: 1, rating: 1, description: 1 }
+      };
+      const result = await policeCollection.findOne(query, options)
       res.send(result)
     })
 
